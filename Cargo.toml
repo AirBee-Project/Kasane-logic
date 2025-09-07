@@ -1,15 +1,21 @@
 [package]
 name = "kasane-logic"
-version = "0.0.1"
+version = "0.0.2"
 edition = "2024"
 license = "MIT"
 description = "This is Kasane-logic"
 
+[features]
+default = ["full"]     # デフォルトはネイティブ
+full = ["rayon", "serde_support"]
+wasm = ["serde_support"]
+serde_support = ["serde"]
 
 [dependencies]
-serde = { version = "1.0", features = ["derive"], optional = true }
 serde_json = "1.0.141"
 schemars = "1.0.4"
+serde = { version = "1.0", features = ["derive"], optional = true }
+rayon = { version = "1.11.0", optional = true }
 chrono = "0.4.41"
 itertools = "0.14.0"
 
@@ -19,6 +25,7 @@ criterion = { version = "0.7", features = ["html_reports"] }
 [[bench]]
 name="id_new"
 harness = false
+
 
 [features]
 default = []

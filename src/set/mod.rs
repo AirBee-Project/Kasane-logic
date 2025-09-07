@@ -1,6 +1,7 @@
 use crate::id::{DimensionRange, SpaceTimeId};
 pub mod and;
 pub mod equal;
+pub mod from_hash;
 pub mod insert;
 pub mod not;
 pub mod or;
@@ -22,6 +23,7 @@ pub mod xor;
     feature = "serde_support",
     derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)
 )]
+
 pub struct SpaceTimeIdSet {
     inner: Vec<SpaceTimeId>,
 }

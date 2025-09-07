@@ -1,5 +1,8 @@
+use std::collections::HashSet;
+
 use crate::{
     id::{
+        z_range::{F_MAX, F_MIN, XY_MAX},
         DimensionRange::{self, AfterUnLimitRange, Any, BeforeUnLimitRange, LimitRange, Single},
         SpaceTimeId,
     },
@@ -48,7 +51,7 @@ impl SpaceTimeId {
         }
 
         let mut tmp = Vec::new();
-        let mut result = SpaceTimeIdSet::new();
+        let mut tmp_hash = HashSet::new();
 
         // X の値に関して処理
         match x_inversions.as_slice() {
@@ -167,15 +170,15 @@ impl SpaceTimeId {
                         self.t,
                     )
                     .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
 
                     let id = SpaceTimeId::new(1, Any, Any, Any, self.i, *t1)
                         .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
 
                     let id = SpaceTimeId::new(1, Any, Any, Any, self.i, *t2)
                         .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
                 }
                 [t1] => {
                     let id = SpaceTimeId::new(
@@ -187,11 +190,11 @@ impl SpaceTimeId {
                         self.t,
                     )
                     .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
 
                     let id = SpaceTimeId::new(1, Any, Any, Any, self.i, *t1)
                         .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
                 }
                 [] => {
                     let id = SpaceTimeId::new(
@@ -203,95 +206,100 @@ impl SpaceTimeId {
                         self.t,
                     )
                     .expect("補集合 SpaceTimeId の生成に失敗");
-                    result.insert(id);
+                    tmp_hash.insert(id);
                 }
                 _ => panic!("t_inversions の配列長がおかしい！"),
             }
         }
-
-        result
+        unsafe { SpaceTimeIdSet::from_hash(tmp_hash) }
     }
 
     /// Inverts a spatial dimension range (x or y) for complement calculation.
-    fn split_xy_dimension(dim_range: &DimensionRange<u32>, z: u16) -> Vec<DimensionRange<u32>> {
-        let max = (1u32 << z) - 1;
+    fn split_xy_dimension(dim_range: &DimensionRange<u32>, z: u8) -> Vec<DimensionRange<u32>> {
+        let max = XY_MAX[z as usize]; // << 変更
         match dim_range {
             Single(v) => {
                 if *v == 0 {
-                    vec![LimitRange(1, max)]
+                    vec![DimensionRange::LimitRange(1, max)]
                 } else if *v == max {
-                    vec![LimitRange(0, max - 1)]
+                    vec![DimensionRange::LimitRange(0, max - 1)]
                 } else {
-                    vec![LimitRange(0, v - 1), LimitRange(v + 1, max)]
+                    vec![
+                        DimensionRange::LimitRange(0, v - 1),
+                        DimensionRange::LimitRange(v + 1, max),
+                    ]
                 }
             }
-            LimitRange(s, e) => {
+            DimensionRange::LimitRange(s, e) => {
                 let mut res = Vec::new();
                 if *s > 0 {
-                    res.push(LimitRange(0, s - 1));
+                    res.push(DimensionRange::LimitRange(0, s - 1));
                 }
                 if *e < max {
-                    res.push(LimitRange(e + 1, max));
+                    res.push(DimensionRange::LimitRange(e + 1, max));
                 }
                 res
             }
-            AfterUnLimitRange(s) => {
+            DimensionRange::AfterUnLimitRange(s) => {
                 if *s == 0 {
                     vec![]
                 } else {
-                    vec![LimitRange(0, s - 1)]
+                    vec![DimensionRange::LimitRange(0, s - 1)]
                 }
             }
-            BeforeUnLimitRange(e) => {
+            DimensionRange::BeforeUnLimitRange(e) => {
                 if *e == max {
                     vec![]
                 } else {
-                    vec![LimitRange(e + 1, max)]
+                    vec![DimensionRange::LimitRange(e + 1, max)]
                 }
             }
-            Any => vec![],
+            DimensionRange::Any => vec![],
         }
     }
 
-    /// Inverts a vertical dimension range (f) for complement calculation.
-    fn split_f_dimension(dim_range: &DimensionRange<i32>, z: u16) -> Vec<DimensionRange<i32>> {
-        let max = (1i32 << z) - 1;
-        let min = -(1i32 << z);
+    /// F の補集合を作る
+    fn split_f_dimension(dim_range: &DimensionRange<i32>, z: u8) -> Vec<DimensionRange<i32>> {
+        let max = F_MAX[z as usize]; // << 変更
+        let min = F_MIN[z as usize]; // << 変更
         match dim_range {
             Single(v) => {
                 if *v == min {
-                    vec![LimitRange(min + 1, max)]
+                    vec![DimensionRange::LimitRange(min + 1, max)]
                 } else if *v == max {
-                    vec![LimitRange(min, max - 1)]
+                    vec![DimensionRange::LimitRange(min, max - 1)]
                 } else {
-                    vec![LimitRange(min, v - 1), LimitRange(v + 1, max)]
+                    vec![
+                        DimensionRange::LimitRange(min, v - 1),
+                        DimensionRange::LimitRange(v + 1, max),
+                    ]
                 }
             }
-            LimitRange(s, e) => {
+            DimensionRange::LimitRange(s, e) => {
                 let mut res = Vec::new();
                 if *s > min {
-                    res.push(LimitRange(min, s - 1));
+                    res.push(DimensionRange::LimitRange(min, s - 1));
                 }
                 if *e < max {
-                    res.push(LimitRange(e + 1, max));
+                    res.push(DimensionRange::LimitRange(e + 1, max));
                 }
                 res
             }
-            AfterUnLimitRange(s) => {
+            DimensionRange::AfterUnLimitRange(s) => {
                 if *s <= min {
                     vec![]
                 } else {
-                    vec![LimitRange(min, s - 1)]
+                    vec![DimensionRange::LimitRange(min, s - 1)]
                 }
             }
-            BeforeUnLimitRange(e) => {
+            DimensionRange::BeforeUnLimitRange(e) => {
                 if *e >= max {
                     vec![]
                 } else {
-                    vec![LimitRange(e + 1, max)]
+                    vec![DimensionRange::LimitRange(e + 1, max)]
                 }
             }
-            Any => vec![],
+            DimensionRange::Any => vec![],
         }
     }
 
