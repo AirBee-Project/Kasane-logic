@@ -1,7 +1,7 @@
 use std::ops::{Add, Mul, Sub};
 
-use crate::id::DimensionRange::{AfterUnLimitRange, Any, BeforeUnLimitRange, LimitRange, Single};
 use crate::id::fmt::Debug;
+use crate::id::DimensionRange::{AfterUnLimitRange, Any, BeforeUnLimitRange, LimitRange, Single};
 use crate::id::{DimensionRange, SpaceTimeId};
 
 /// 2つの `SpaceTimeId` の関係を表す
