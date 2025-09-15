@@ -1,16 +1,17 @@
-use crate::{
-    function::tools::{
-        ECEF, ecef_to_point::ecef_to_point, point_to_ecef::point_to_ecef, point_to_id::point_to_id,
-    },
-    id::{SpaceTimeId, coordinates::Point},
-    set::SpaceTimeIdSet,
-};
 use std::collections::HashSet;
 
+use crate::{
+    function::tools::{
+        ecef_to_point::ecef_to_point, point_to_ecef::point_to_ecef, point_to_id::point_to_id, ECEF,
+    },
+    id::{coordinates::Point, SpaceTimeId},
+};
+
 /// a と b の間の voxel 線分を返す
-pub fn line(z: u8, a: Point, b: Point) -> SpaceTimeIdSet {
+pub fn line(z: u8, a: Point, b: Point) -> HashSet<SpaceTimeId> {
     let steps = 50_000;
-    let mut voxels_set = SpaceTimeIdSet::new();
+
+    let mut result = HashSet::new();
 
     // Point → ECEF
     let ea = point_to_ecef(a);
@@ -32,8 +33,8 @@ pub fn line(z: u8, a: Point, b: Point) -> SpaceTimeIdSet {
         // Point → Voxel
         let voxel = point_to_id(z, p);
 
-        voxels_set.insert(voxel);
+        result.insert(voxel);
     }
 
-    voxels_set
+    result
 }

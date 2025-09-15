@@ -8,7 +8,7 @@ pub fn generate_all_single_stids() -> Vec<SpaceTimeId> {
     //f が自然数の物のみ
     for (f, x, y) in iproduct!(0..=MAX_ROW as i32, 0..=MAX_ROW as u32, 0..=MAX_ROW as u32) {
         let stid = SpaceTimeId::new(
-            ZOOM_LEVEL as u16,
+            ZOOM_LEVEL as u8,
             DimensionRange::Single(f),
             DimensionRange::Single(x),
             DimensionRange::Single(y),
@@ -24,10 +24,12 @@ pub fn generate_all_single_stids() -> Vec<SpaceTimeId> {
 
 pub fn generate_all_range_stids() -> Vec<SpaceTimeId> {
     let mut all_range_stids = generate_all_single_stids();
-    for (f_end, x_end, y_end) in iproduct!(0..=MAX_ROW as i32, 0..=MAX_ROW as u32, 0..=MAX_ROW as u32) {
+    for (f_end, x_end, y_end) in
+        iproduct!(0..=MAX_ROW as i32, 0..=MAX_ROW as u32, 0..=MAX_ROW as u32)
+    {
         for (f_start, x_start, y_start) in iproduct!(0..=f_end, 0..=x_end, 0..=y_end) {
             let stid = SpaceTimeId::new(
-                ZOOM_LEVEL as u16,
+                ZOOM_LEVEL as u8,
                 DimensionRange::LimitRange(f_start, f_end),
                 DimensionRange::LimitRange(x_start, x_end),
                 DimensionRange::LimitRange(y_start, y_end),
