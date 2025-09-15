@@ -1,19 +1,21 @@
-
 use itertools::iproduct;
-use kasane_logic::{set::SpaceTimeIdSet};
+use kasane_logic::set::SpaceTimeIdSet;
 
-use crate::benchmark_utils::{generate_all_range_stids, generate_all_single_stids, write_markdown, measure_benchmark_insert, measure_benchmark, measure_benchmark_not};
+use crate::benchmark_utils::{
+    generate_all_range_stids, generate_all_single_stids, measure_benchmark,
+    measure_benchmark_insert, measure_benchmark_not, write_markdown,
+};
 
-pub const ZOOM_LEVEL:i32 = 1;
-pub const MAX_ROW:i64 = 2_i64.pow(ZOOM_LEVEL as u32) - 1;
+pub const ZOOM_LEVEL: i32 = 1;
+pub const MAX_ROW: i64 = 2_i64.pow(ZOOM_LEVEL as u32) - 1;
 
 ///`benchmark` function make arguments for the benchmark test
 /// and,or,not,xor,eq are all supported operations
 /// insert_test is supported by other function `benchmark_insert`
 //Rは複数の型を許容するため
-pub fn benchmark_main<F, R>(calculate: F, name: &str, iterations: usize) 
-where 
-    F: Fn(&SpaceTimeIdSet,&SpaceTimeIdSet) -> R,
+pub fn benchmark_main<F, R>(calculate: F, name: &str, iterations: usize)
+where
+    F: Fn(&SpaceTimeIdSet, &SpaceTimeIdSet) -> R,
 {
     let mut total_benchmark_time = 0;
     let all_stids = generate_all_single_stids();
@@ -23,8 +25,11 @@ where
     let total_voxel_count = all_stids.len();
     if total_voxel_count > 16 {
         panic!("Too many voxels for benchmark.");
-    }    
-    for (mask_a,mask_b) in iproduct!(0..(1u16 << total_voxel_count), 0..(1u16 << total_voxel_count)) {
+    }
+    for (mask_a, mask_b) in iproduct!(
+        0..(1u16 << total_voxel_count),
+        0..(1u16 << total_voxel_count)
+    ) {
         let mut subset_set_a = SpaceTimeIdSet::new();
         let mut subset_set_b = SpaceTimeIdSet::new();
         for (i, stid) in all_stids.iter().enumerate() {
@@ -36,7 +41,8 @@ where
             }
         }
         // 計測
-        total_benchmark_time += measure_benchmark(&calculate,iterations, &subset_set_a, &subset_set_b);
+        total_benchmark_time +=
+            measure_benchmark(&calculate, iterations, &subset_set_a, &subset_set_b);
         calculate_count += 1;
     }
     // Markdownファイルに追記
@@ -67,7 +73,7 @@ pub fn benchmark_insert(iterations: usize) {
     write_markdown(name, total_benchmark_time as f64, calculate_count);
 }
 
-pub fn benchmark_not(iterations: usize){
+pub fn benchmark_not(iterations: usize) {
     let name = "Complement";
     let mut total_benchmark_time = 0;
     let all_stids = generate_all_single_stids();

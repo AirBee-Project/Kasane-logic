@@ -1,10 +1,10 @@
-{
-  // "rust-analyzer.cargo.features": [
-  //   "wasm"
-  // ],
-  // "rust-analyzer.cargo.noDefaultFeatures": true
-  "rust-analyzer.cargo.features": [
-    "full"
-  ],
-  "rust-analyzer.cargo.noDefaultFeatures": true
-}
+// {
+//   // "rust-analyzer.cargo.features": [
+//   //   "wasm"
+//   // ],
+//   // "rust-analyzer.cargo.noDefaultFeatures": true
+//   "rust-analyzer.cargo.features": [
+//     "default"
+//   ],
+//   "rust-analyzer.cargo.noDefaultFeatures": true
+// }

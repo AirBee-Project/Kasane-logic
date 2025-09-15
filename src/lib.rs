@@ -29,7 +29,6 @@
 
 pub mod function;
 pub mod id;
-pub mod map;
 pub mod set;
 
 #[cfg(test)]
