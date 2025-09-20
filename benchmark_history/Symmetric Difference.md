@@ -9,3 +9,4 @@ These results were obtained at the zoom levels shown in the table by executing t
 | 2025-08-29 05:23:15 | 22381009665.000 | 341507.1054840088 | 1 | 65536 | Only voxels with an elevation of zero or higher are considered. |
 | 2025-09-15 08:28:18 | 25619791978.000 | 390927.00161743164 | 1 | 65536 | Only voxels with an elevation of zero or higher are considered. |
 | 2025-09-15 08:30:04 | 25705945261.000 | 392241.5963897705 | 1 | 65536 | Only voxels with an elevation of zero or higher are considered. |
+| 2025-09-20 05:06:32 | 25318508472.000 | 386329.7801513672 | 1 | 65536 | Only voxels with an elevation of zero or higher are considered. |
