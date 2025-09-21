@@ -1,6 +1,12 @@
 use crate::id::DimensionRange::{AfterUnLimitRange, Any, BeforeUnLimitRange, LimitRange, Single};
 use crate::id::{DimensionRange, SpaceTimeId};
 
+#[cfg_attr(
+    feature = "serde_support",
+    derive(serde::Serialize, serde::Deserialize, schemars::JsonSchema)
+)]
+#[derive(Debug, Clone, Copy, Hash, Eq, PartialEq, PartialOrd, Ord)]
+
 pub struct PureSpaceTimeId {
     pub z: u8,
     pub f: i32,
